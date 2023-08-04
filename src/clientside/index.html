@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Baseline vs Load Test</title>
+    </head>
+    <body>
+        <h1>Baseline vs Load Test</h1>
+        <div id="tester" style="width:600px;height:250px;"></div>
+
+        <script src="https://cdn.plot.ly/plotly-2.16.1.min.js"></script>
+        <script>
+            async function plotGraph() {
+                var trace1 = {
+                    x: [],
+                    y: [],
+                    name: 'Baseline-cpu',
+                    type: 'bar'
+                };
+                var trace2 = {
+                    x: [],
+                    y: [],
+                    name: 'Load-cpu',
+                    type: 'bar'
+                };
+                var trace3 = {
+                    x: [],
+                    y: [],
+                    name: 'Baseline-mem',
+                    type: 'scatter'
+                };
+                var trace4 = {
+                    x: [],
+                    y: [],
+                    name: 'Load-mem',
+                    type: 'scatter'
+                };
+
+                for (let i = 0; i < 3; i++) {
+                    await fetch("./data/run" + i + ".json")
+                        .then((response) => response.json())
+                        .then((json) => {
+                            // approprietly populate trace variables with fetched data
+                            trace1.x.push("run " + i);
+                            trace1.y.push(json.baseline.cpu);
+                            trace2.x.push("run " + i);
+                            trace2.y.push(json.load.cpu);
+
+                            trace3.x.push("run " + i);
+                            trace3.y.push(json.baseline.mem);
+                            trace4.x.push("run " + i);
+                            trace4.y.push(json.load.mem);
+                        });
+                }
+
+                // plot
+                var data = [trace1, trace2, trace3, trace4];
+                var layout = {
+                    title: 'Baseline vs Load Test',
+                    width: 1600,
+                    height: 800
+                };
+                Plotly.newPlot('tester', data, layout);
+            }
+
+            plotGraph();
+        </script>
+    </body>
+</html>
